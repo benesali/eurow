@@ -1,0 +1,29 @@
+{
+	"name": "adls_payments",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "adls_raw_adf",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "DS3_Payments.csv",
+				"folderPath": "raw",
+				"fileSystem": "datalake"
+			},
+			"columnDelimiter": ";",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "CompanyId;CustomerId;CountryId;DocumentNumber;DocumentType;PostingDate;Entry;EntryType;Amount;InvoiceNumber;InvoiceEntry",
+				"type": "String"
+			}
+		]
+	}
+}
