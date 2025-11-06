@@ -1,0 +1,9 @@
+{
+	"name": "eurowadf",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "137c4289-980b-402e-b27b-2ec5dd6c9405",
+		"tenantId": "040e2327-9620-4d28-8d78-22dff40fe2ad"
+	}
+}
