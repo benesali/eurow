@@ -1,0 +1,29 @@
+{
+	"name": "adls_customers",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "adls_raw_adf",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "DS1_Customers.txt",
+				"folderPath": "raw",
+				"fileSystem": "datalake"
+			},
+			"columnDelimiter": "\t",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "CustomerId\tCustomerName\tCustomerCategory",
+				"type": "String"
+			}
+		]
+	}
+}
