@@ -1,0 +1,50 @@
+{
+	"name": "adls_invoices",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "adls_raw_adf",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Invoices",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "DS2_Invoices.xlsx",
+				"folderPath": "raw",
+				"fileSystem": "datalake"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			}
+		]
+	}
+}
