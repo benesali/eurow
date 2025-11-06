@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "eurowadf"
+		},
+		"ewdatalake_connectionString": {
+			"value": ""
+		},
+		"sql_staging_adf_password": {
+			"value": ""
+		},
+		"sql_staging_adf_properties_typeProperties_server": {
+			"value": "sql-server-ew-demo.database.windows.net"
+		},
+		"sql_staging_adf_properties_typeProperties_database": {
+			"value": "ewdemo"
+		},
+		"sql_staging_adf_properties_typeProperties_userName": {
+			"value": "abene"
+		}
+	}
+}
