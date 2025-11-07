@@ -59,7 +59,7 @@ erDiagram
     }
 
     INVOICES {
-        string DocumentNumber PK
+        string InvoiceNumber PK
         string CustomerId FK
         int CompanyId
         string CountryId
@@ -71,7 +71,7 @@ erDiagram
     }
 
     PAYMENTS {
-        string DocumentNumber PK
+        string PaymentNumber PK
         string CustomerId FK
         int CompanyId
         string CountryId

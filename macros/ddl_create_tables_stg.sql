@@ -8,8 +8,6 @@
           CustomerId NVARCHAR(50),
           CustomerName NVARCHAR(200),
           CustomerCategory NVARCHAR(100),
-          LoadDate DATETIME DEFAULT GETDATE(),
-          SourceFile NVARCHAR(200)
       );
   END
   {% endset %}
@@ -29,8 +27,6 @@
           Entry NVARCHAR(50),
           EntryType NVARCHAR(50),
           Amount DECIMAL(18,2),
-          LoadDate DATETIME DEFAULT GETDATE(),
-          SourceFile NVARCHAR(200)
       );
   END
   {% endset %}
@@ -52,8 +48,6 @@
           Amount DECIMAL(18,2),
           InvoiceNumber NVARCHAR(50),
           InvoiceEntry NVARCHAR(50),
-          LoadDate DATETIME DEFAULT GETDATE(),
-          SourceFile NVARCHAR(200)
       );
   END
   {% endset %}

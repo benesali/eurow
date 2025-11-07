@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: cln_sources
+    schema: stg
+    tables:
+      - name: customers_stg
+        description: "staged data to clean"
+      - name: invoices_stg
+        description: "staged data to clean"
+      - name: payments_stg
+        description: "staged data to clean"

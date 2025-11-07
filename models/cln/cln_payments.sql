@@ -26,8 +26,8 @@ with src as (
         trim(InvoiceEntry) as InvoiceEntry,
         LoadDate,
         SourceFile
-    from {{ ref('payments') }}
-    where CustomerId is not null
+    from {{ source('cln_sources', 'payments_stg') }}
+    where InvoiceNumber is not null
 )
 
 select *

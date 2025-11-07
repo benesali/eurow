@@ -3,10 +3,7 @@
     schema='cln',
     unique_key='CustomerId',
     on_schema_change='sync'
-
 ) }}
--- incremental load from bronze do cln aka Silver
--- set PK for increment
 
 with base as (
     select
@@ -15,8 +12,19 @@ with base as (
         upper(ltrim(rtrim(CustomerCategory))) as CustomerCategory,
         LoadDate,
         SourceFile
-    from {{ source('stg', 'customers_raw') }}
+    from {{ source('cln_sources', 'customers_stg') }}
     where CustomerId is not null
+)
+
+-- deduplikace
+, dedup as (
+    select *
+    from (
+        select *,
+               row_number() over (partition by CustomerId order by LoadDate desc) as rn
+        from base
+    ) t
+    where rn = 1
 )
 
 select
@@ -25,9 +33,8 @@ select
     CustomerCategory,
     LoadDate,
     SourceFile
-from base
+from dedup
 
--- incremental load by tech column 
 {% if is_incremental() %}
 where LoadDate > (select max(LoadDate) from {{ this }})
 {% endif %}
