@@ -38,4 +38,6 @@ CREATE TABLE stg.payments_raw (
     InvoiceNumber NVARCHAR(50),
     InvoiceEntry NVARCHAR(50)
 );
+
+{{ log("Tables created successfully!", info=True) }}
 {% endmacro %}
