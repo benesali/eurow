@@ -1,0 +1,12 @@
+{
+	"name": "sql_custiners",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sqldb_eurow_demo",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
