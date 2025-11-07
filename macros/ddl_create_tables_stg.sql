@@ -1,12 +1,5 @@
-{% macro ddl_stage_empty() %}
+{% macro ddl_create_tables_stg() %}
   {{ log("Starting DDL creation for staging schema...", info=True) }}
-
-  {% set create_schema %}
-  IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'stg')
-  EXEC('CREATE SCHEMA stg');
-  {% endset %}
-  {% do run_query(create_schema) %}
-  {{ log("Schema [stg] ensured.", info=True) }}
 
   {% set create_customers %}
   IF OBJECT_ID('stg.customers_raw', 'U') IS NULL
@@ -14,7 +7,9 @@
       CREATE TABLE stg.customers_raw (
           CustomerId NVARCHAR(50),
           CustomerName NVARCHAR(200),
-          CustomerCategory NVARCHAR(100)
+          CustomerCategory NVARCHAR(100),
+          LoadDate DATETIME DEFAULT GETDATE(),
+          SourceFile NVARCHAR(200)
       );
   END
   {% endset %}
@@ -33,7 +28,9 @@
           PostingDate DATE,
           Entry NVARCHAR(50),
           EntryType NVARCHAR(50),
-          Amount DECIMAL(18,2)
+          Amount DECIMAL(18,2),
+          LoadDate DATETIME DEFAULT GETDATE(),
+          SourceFile NVARCHAR(200)
       );
   END
   {% endset %}
@@ -54,12 +51,14 @@
           EntryType NVARCHAR(50),
           Amount DECIMAL(18,2),
           InvoiceNumber NVARCHAR(50),
-          InvoiceEntry NVARCHAR(50)
+          InvoiceEntry NVARCHAR(50),
+          LoadDate DATETIME DEFAULT GETDATE(),
+          SourceFile NVARCHAR(200)
       );
   END
   {% endset %}
   {% do run_query(create_payments) %}
   {{ log("Table [stg.payments_raw] created or already exists.", info=True) }}
 
-  {{ log("DDL execution completed successfully!", info=True) }}
+  {{ log("DDL execution completed OK!", info=True) }}
 {% endmacro %}
