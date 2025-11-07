@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "eurowadf"
 		},
+		"adls_raw_adf_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'adls_raw_adf'"
+		},
 		"ewdatalake_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ewdatalake'"
@@ -14,6 +18,14 @@
 		"sql_staging_adf_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'sql_staging_adf'"
+		},
+		"sqldb_eurow_demo_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'sqldb_eurow_demo'"
+		},
+		"adls_raw_adf_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://eurowdemo.dfs.core.windows.net/"
 		},
 		"sql_staging_adf_properties_typeProperties_server": {
 			"type": "string",
@@ -24,6 +36,18 @@
 			"defaultValue": "ewdemo"
 		},
 		"sql_staging_adf_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "abene"
+		},
+		"sqldb_eurow_demo_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sql-server-ew-demo.database.windows.net"
+		},
+		"sqldb_eurow_demo_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "ewdemo"
+		},
+		"sqldb_eurow_demo_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "abene"
 		},
@@ -54,11 +78,20 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"adls_raw_adf_accountKey": {
+						"value": "[parameters('adls_raw_adf_accountKey')]"
+					},
 					"ewdatalake_connectionString": {
 						"value": "[parameters('ewdatalake_connectionString')]"
 					},
 					"sql_staging_adf_password": {
 						"value": "[parameters('sql_staging_adf_password')]"
+					},
+					"sqldb_eurow_demo_password": {
+						"value": "[parameters('sqldb_eurow_demo_password')]"
+					},
+					"adls_raw_adf_properties_typeProperties_url": {
+						"value": "[parameters('adls_raw_adf_properties_typeProperties_url')]"
 					},
 					"sql_staging_adf_properties_typeProperties_server": {
 						"value": "[parameters('sql_staging_adf_properties_typeProperties_server')]"
@@ -68,6 +101,15 @@
 					},
 					"sql_staging_adf_properties_typeProperties_userName": {
 						"value": "[parameters('sql_staging_adf_properties_typeProperties_userName')]"
+					},
+					"sqldb_eurow_demo_properties_typeProperties_server": {
+						"value": "[parameters('sqldb_eurow_demo_properties_typeProperties_server')]"
+					},
+					"sqldb_eurow_demo_properties_typeProperties_database": {
+						"value": "[parameters('sqldb_eurow_demo_properties_typeProperties_database')]"
+					},
+					"sqldb_eurow_demo_properties_typeProperties_userName": {
+						"value": "[parameters('sqldb_eurow_demo_properties_typeProperties_userName')]"
 					}
 				}
 			},

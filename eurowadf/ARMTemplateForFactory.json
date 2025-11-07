@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "eurowadf"
 		},
+		"adls_raw_adf_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'adls_raw_adf'"
+		},
 		"ewdatalake_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ewdatalake'"
@@ -14,6 +18,14 @@
 		"sql_staging_adf_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'sql_staging_adf'"
+		},
+		"sqldb_eurow_demo_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'sqldb_eurow_demo'"
+		},
+		"adls_raw_adf_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://eurowdemo.dfs.core.windows.net/"
 		},
 		"sql_staging_adf_properties_typeProperties_server": {
 			"type": "string",
@@ -26,12 +38,256 @@
 		"sql_staging_adf_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "abene"
+		},
+		"sqldb_eurow_demo_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sql-server-ew-demo.database.windows.net"
+		},
+		"sqldb_eurow_demo_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "ewdemo"
+		},
+		"sqldb_eurow_demo_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "abene"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/ppl_copy_raw_to stage')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "adls_customers",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "sql_custiners",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/adls_customers')]",
+				"[concat(variables('factoryId'), '/datasets/sql_custiners')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/adls_customers')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adls_raw_adf",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "DS1_Customers.txt",
+						"folderPath": "raw",
+						"fileSystem": "datalake"
+					},
+					"columnDelimiter": "\t",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CustomerId\tCustomerName\tCustomerCategory",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adls_raw_adf')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/adls_invoices')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adls_raw_adf",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Invoices",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "DS2_Invoices.xlsx",
+						"folderPath": "raw",
+						"fileSystem": "datalake"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adls_raw_adf')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/adls_payments')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adls_raw_adf",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "DS3_Payments.csv",
+						"folderPath": "raw",
+						"fileSystem": "datalake"
+					},
+					"columnDelimiter": ";",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CompanyId;CustomerId;CountryId;DocumentNumber;DocumentType;PostingDate;Entry;EntryType;Amount;InvoiceNumber;InvoiceEntry",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adls_raw_adf')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sql_custiners')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sqldb_eurow_demo",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "cln",
+					"table": "customers"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sqldb_eurow_demo')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/adls_raw_adf')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('adls_raw_adf_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('adls_raw_adf_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ewdatalake')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -66,6 +322,80 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sqldb_eurow_demo')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('sqldb_eurow_demo_properties_typeProperties_server')]",
+					"database": "[parameters('sqldb_eurow_demo_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('sqldb_eurow_demo_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('sqldb_eurow_demo_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "adls_customers",
+								"type": "DatasetReference"
+							},
+							"name": "adslCustomers"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "sql_custiners",
+								"type": "DatasetReference"
+							},
+							"name": "sqlCustomers",
+							"description": "Export data to sql_custoners"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          {CustomerId     CustomerName     CustomerCategory} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> adslCustomers",
+						"adslCustomers sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sqlCustomers"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/adls_customers')]",
+				"[concat(variables('factoryId'), '/datasets/sql_custiners')]"
+			]
 		}
 	]
 }
