@@ -110,7 +110,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "sql_custiners",
+								"referenceName": "stg_sql_customers",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -124,7 +124,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/adls_customers')]",
-				"[concat(variables('factoryId'), '/datasets/sql_custiners')]"
+				"[concat(variables('factoryId'), '/datasets/stg_sql_customers')]"
 			]
 		},
 		{
@@ -251,7 +251,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/sql_custiners')]",
+			"name": "[concat(parameters('factoryName'), '/stg_sql_customers')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -263,7 +263,7 @@
 				"type": "AzureSqlTable",
 				"schema": [],
 				"typeProperties": {
-					"schema": "cln",
+					"schema": "stg",
 					"table": "customers"
 				}
 			},
@@ -364,7 +364,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "sql_custiners",
+								"referenceName": "stg_sql_customers",
 								"type": "DatasetReference"
 							},
 							"name": "sqlCustomers",
@@ -394,7 +394,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/adls_customers')]",
-				"[concat(variables('factoryId'), '/datasets/sql_custiners')]"
+				"[concat(variables('factoryId'), '/datasets/stg_sql_customers')]"
 			]
 		}
 	]
