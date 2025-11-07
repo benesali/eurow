@@ -71,27 +71,15 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"timeout": "00:10:00"
-				}
-			},
-			{
-				"name": "Stage to clean DBT",
-				"type": "WebHook",
-				"dependsOn": [
-					{
-						"activity": "Raw to stage",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
+					"url": "POST https://bx295.us1.dbt.com/api/v2/accounts/70471823507521/jobs/70471823526816/run/",
 					"method": "POST",
+					"headers": {
+						"Authorization": "dbtu_RdTR9Dsw7fQ0MvGHGpUW2HjdgbnmAYfSXUwMqKeXb22Vof7hTI",
+						"Content-Type": "application/json"
+					},
+					"body": {
+						"cause": "Triggered from ADF"
+					},
 					"timeout": "00:10:00"
 				}
 			}
