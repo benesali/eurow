@@ -2,7 +2,7 @@
     materialized='incremental',
     schema='cln',
     unique_key='CustomerId',
-    on_schema_change='sync' -- demo project setup
+    on_schema_change='sync'
 
 ) }}
 -- incremental load from bronze do cln aka Silver

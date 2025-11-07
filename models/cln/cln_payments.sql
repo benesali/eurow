@@ -3,7 +3,7 @@
     schema='cln',
     alias='payments',
     unique_key='Entry',  
-    on_schema_change='sync' -- demo project setup
+    on_schema_change='sync'
 ) }}
 
 -- incremental load from bronze do cln aka Silver

@@ -2,7 +2,7 @@
  config(materialized='incremental',
  schema='cln',
  unique_key='DocumentNumber',
- on_schema_change='sync' -- demo project setup
+ on_schema_change='sync'
 ) 
  }}
 
