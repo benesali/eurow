@@ -1,3 +1,5 @@
+
+
 erDiagram
     CUSTOMERS {
         string CustomerId PK

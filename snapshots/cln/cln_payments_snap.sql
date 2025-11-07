@@ -1,15 +1,16 @@
-{% snapshot invoices_snapshot %}
+{% snapshot payments_snapshot %}
 {{
     config(
         target_schema='snapshots_cln',
-        unique_key='DocumentNumber',
+        unique_key='CustomerId',
         strategy='check',
-        check_cols=['DocumentType', 'PostingDate', 'Amount'],
+        check_cols= =['CustomerId', 'Amount', 'InvoiceNumber', 'PostingDate'],
         invalidate_hard_deletes=True  -- demo setup
     )
 }}
 
-{{ snapshot_select('cln_invoices') }}
+{{ snapshot_select('cln_payments') }}
 
 {{ log("Snapshot  " ~ this ~ " created.", info=True) }}
+
 {% endsnapshot %}
