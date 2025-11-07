@@ -9,7 +9,7 @@
     )
 }}
 
-{{ snapshot_select('cln_payments') }}
+{{ select_all('cln_payments') }}
 
 {{ log("Snapshot  " ~ this ~ " created.", info=True) }}
 

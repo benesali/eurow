@@ -9,7 +9,7 @@
     )
 }}
 
-{{ snapshot_select('cln_customers') }}
+{{ select_all('cln_customers') }}
 
 {{ log("Snapshot  " ~ this ~ " created.", info=True) }}
 {% endsnapshot %}
