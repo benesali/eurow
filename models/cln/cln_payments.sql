@@ -24,10 +24,10 @@ with src as (
         try_cast(Amount as decimal(18,2)) as Amount,
         trim(InvoiceNumber) as InvoiceNumber,
         trim(InvoiceEntry) as InvoiceEntry,
-        LoadDate,
-        SourceFile
+        getdate() as LoadDate
     from {{ source('cln_sources', 'payments_stg') }}
-    where InvoiceNumber is not null
+    where PaymentNumber is not null
+
 )
 
 select *

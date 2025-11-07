@@ -14,9 +14,9 @@ select
   CustomerId,
   try_convert(date, PostingDate, 104) as PostingDate,
   try_convert(decimal(18,2), Amount) as Amount,
-  LoadDate,
-  SourceFile
-    from {{ source('cln_sources', 'invoices_stg') }}
+  getdate() as LoadDate
+from {{ source('cln_sources', 'invoices_stg') }}
+where InvoiceNumber is not null
 
 -- incremental load by tech column
 {% if is_incremental() %}

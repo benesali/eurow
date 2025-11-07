@@ -10,19 +10,31 @@ with base as (
         ltrim(rtrim(CustomerId)) as CustomerId,
         ltrim(rtrim(CustomerName)) as CustomerName,
         upper(ltrim(rtrim(CustomerCategory))) as CustomerCategory,
-        LoadDate,
-        SourceFile
+        getdate() as LoadDate
     from {{ source('cln_sources', 'customers_stg') }}
     where CustomerId is not null
 )
 
--- deduplikace
+-- deduplikace, na zdroji neni cas, vezmeme vyssi partner ship
+, ranked as (
+    select *,
+        case
+            when CustomerCategory = 'GOLD' then 3
+            when CustomerCategory = 'SILVER' then 2
+            when CustomerCategory = 'BRONZE' then 1
+            else 0
+        end as CategoryRank
+    from base
+)
 , dedup as (
     select *
     from (
         select *,
-               row_number() over (partition by CustomerId order by LoadDate desc) as rn
-        from base
+               row_number() over (
+                   partition by CustomerId
+                   order by CategoryRank desc
+               ) as rn
+        from ranked
     ) t
     where rn = 1
 )
@@ -31,8 +43,6 @@ select
     CustomerId,
     CustomerName,
     CustomerCategory,
-    LoadDate,
-    SourceFile
 from dedup
 
 {% if is_incremental() %}
