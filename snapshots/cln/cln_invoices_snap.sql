@@ -5,7 +5,7 @@
         unique_key='DocumentNumber',
         strategy='check',
         check_cols=['DocumentType', 'PostingDate', 'Amount'],
-        invalidate_hard_deletes=True  -- demo setup
+        invalidate_hard_deletes=True 
     )
 }}
 

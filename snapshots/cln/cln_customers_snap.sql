@@ -5,7 +5,7 @@
         unique_key='CustomerId',
         strategy='check',
         check_cols= ['CustomerName', 'CustomerCategory'],
-        invalidate_hard_deletes=True  -- demo setup
+        invalidate_hard_deletes=True 
     )
 }}
 
