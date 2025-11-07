@@ -49,7 +49,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "sql_custiners",
+						"referenceName": "stg_sql_customers",
 						"type": "DatasetReference"
 					}
 				]

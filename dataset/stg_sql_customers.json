@@ -1,5 +1,5 @@
 {
-	"name": "sql_custiners",
+	"name": "stg_sql_customers",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "sqldb_eurow_demo",
@@ -9,7 +9,7 @@
 		"type": "AzureSqlTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "cln",
+			"schema": "stg",
 			"table": "customers"
 		}
 	}
