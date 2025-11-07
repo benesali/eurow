@@ -1,4 +1,6 @@
 {% macro ddl_stage_empty() %}
+
+  {% set ddl_script %}
 CREATE SCHEMA IF NOT EXISTS stg;
 
 -- CUSTOMERS
@@ -38,6 +40,10 @@ CREATE TABLE stg.payments_raw (
     InvoiceNumber NVARCHAR(50),
     InvoiceEntry NVARCHAR(50)
 );
+  {% endset %}
+
+  {% do run_query(ddl_script) %}
+
 
 {{ log("Tables created successfully!", info=True) }}
 {% endmacro %}
