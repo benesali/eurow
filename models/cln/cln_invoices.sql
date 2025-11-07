@@ -10,7 +10,7 @@
 -- set PK for increment
 
 select
-  ltrim(rtrim(DocumentNumber)) as DocumentNumber,
+  ltrim(rtrim(DocumentNumber)) as InvoiceNumber,
   CustomerId,
   try_convert(date, PostingDate, 104) as PostingDate,
   try_convert(decimal(18,2), Amount) as Amount,

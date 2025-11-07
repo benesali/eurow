@@ -2,7 +2,7 @@
 {{
     config(
         target_schema='snapshots_cln',
-        unique_key='DocumentNumber',
+        unique_key='InvoiceNumber',
         strategy='check',
         check_cols=['DocumentType', 'PostingDate', 'Amount'],
         invalidate_hard_deletes=True

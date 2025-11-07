@@ -16,7 +16,7 @@ with src as (
         CompanyId,
         trim(CustomerId) as CustomerId,
         upper(trim(CountryId)) as CountryId,
-        trim(DocumentNumber) as DocumentNumber,
+        trim(DocumentNumber) as PaymentNumber,
         trim(DocumentType) as DocumentType,
         try_cast(PostingDate as date) as PostingDate,
         trim(Entry) as Entry,
