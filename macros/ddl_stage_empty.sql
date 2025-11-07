@@ -1,4 +1,4 @@
-{% macro create_staging_tables() %}
+{% macro ddl_stage_empty() %}
 CREATE SCHEMA IF NOT EXISTS stg;
 
 -- CUSTOMERS
