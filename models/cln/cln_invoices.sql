@@ -16,7 +16,7 @@ select
   try_convert(decimal(18,2), Amount) as Amount,
   LoadDate,
   SourceFile
-from {{ ref('invoices') }}
+    from {{ source('cln_sources', 'invoices_stg') }}
 
 -- incremental load by tech column
 {% if is_incremental() %}
