@@ -4,8 +4,8 @@
         target_schema='snapshots_cln',
         unique_key='CustomerId',
         strategy='check',
-        check_cols= =['CustomerId', 'Amount', 'InvoiceNumber', 'PostingDate'],
-        invalidate_hard_deletes=True 
+        check_cols=['CustomerId', 'Amount', 'InvoiceNumber', 'PostingDate'],
+        invalidate_hard_deletes=True
     )
 }}
 
