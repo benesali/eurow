@@ -2,7 +2,7 @@
     materialized='incremental',
     schema='cln',
     alias='payments',
-    unique_key='Entry',  
+    unique_key='Entry',
     on_schema_change='sync'
 ) }}
 
@@ -26,7 +26,7 @@ with src as (
         trim(InvoiceEntry) as InvoiceEntry,
         LoadDate,
         SourceFile
-    from {{ ref('stg_payments') }}
+    from {{ ref('payments') }}
     where CustomerId is not null
 )
 
