@@ -8,8 +8,20 @@
 		"annotations": [],
 		"type": "RestResource",
 		"typeProperties": {
-			"relativeUrl": "accounts/70471823507521/jobs/70471823526816/run/"
+			"relativeUrl": {
+				"value": "accounts/70471823507521/jobs/@{pipeline().parameters.JobId}/run/",
+				"type": "Expression"
+			}
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "status",
+				"type": "Object"
+			},
+			{
+				"name": "data",
+				"type": "Object"
+			}
+		]
 	}
 }
