@@ -1,0 +1,21 @@
+{
+	"name": "dbt_responses",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dbt_rest_rest_service",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Authorization": {
+				"type": "string",
+				"defaultValue": "Token dbtc_BevLdbcqy792KKI2z-BecpDh0OYoOWpLSchHMZqkCNZX0qJsjQ"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "accounts/70471823507521/jobs/70471823526816/run/"
+		},
+		"schema": []
+	}
+}
