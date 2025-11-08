@@ -65,14 +65,7 @@
 					{
 						"name": "Raw to stage",
 						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Set schemas DBT",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -144,10 +137,39 @@
 							},
 							"timeout": "00:10:00"
 						}
+					},
+					{
+						"name": "job status",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Set schemas DBT",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "dbtRunId",
+							"value": {
+								"value": "@string(activity('Set schemas DBT').output.data.id)\n",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"dbtRunId": {
+						"type": "String"
+					}
 				},
 				"annotations": []
 			},
