@@ -1,12 +1,14 @@
 {
 	"name": "dbt_rest_rest_service",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
 			"url": "https://bx295.us1.dbt.com/api/v2/",
 			"enableServerCertificateValidation": true,
-			"authenticationType": "Anonymous"
+			"authenticationType": "Anonymous",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDREOTg5MTBGLTEyN0QtNDNEMS1CNzc4LUZENkJFRENDRTgwQV84OTI1NzllMy1mMDI3LTRkY2MtODQ0NC04YjBjNDY2YzI2NmMiDQp9"
 		}
 	}
 }
