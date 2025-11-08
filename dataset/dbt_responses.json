@@ -5,12 +5,6 @@
 			"referenceName": "dbt_rest_rest_service",
 			"type": "LinkedServiceReference"
 		},
-		"parameters": {
-			"Authorization": {
-				"type": "string",
-				"defaultValue": "Token dbtc_BevLdbcqy792KKI2z-BecpDh0OYoOWpLSchHMZqkCNZX0qJsjQ"
-			}
-		},
 		"annotations": [],
 		"type": "RestResource",
 		"typeProperties": {
