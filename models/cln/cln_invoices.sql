@@ -15,7 +15,7 @@ select
   try_convert(date, PostingDate, 104) as PostingDate,
   try_convert(decimal(18,2), Amount) as Amount,
   getdate() as LoadDate
-from {{ source('cln_sources', 'invoices_stg') }}
+from {{ source('stg', 'invoices') }}
 where InvoiceNumber is not null
 
 -- incremental load by tech column

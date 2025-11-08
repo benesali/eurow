@@ -25,7 +25,7 @@ with src as (
         trim(InvoiceNumber) as InvoiceNumber,
         trim(InvoiceEntry) as InvoiceEntry,
         getdate() as LoadDate
-    from {{ source('cln_sources', 'payments_stg') }}
+    from {{ source('stg', 'payments') }}
     where PaymentNumber is not null
 
 )

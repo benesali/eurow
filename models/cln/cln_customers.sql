@@ -11,7 +11,7 @@ with base as (
         ltrim(rtrim(CustomerName)) as CustomerName,
         upper(ltrim(rtrim(CustomerCategory))) as CustomerCategory,
         getdate() as LoadDate
-    from {{ source('cln_sources', 'customers_stg') }}
+    from {{ source('stg', 'customers') }}
     where CustomerId is not null
 )
 
