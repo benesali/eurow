@@ -1,18 +1,13 @@
 {
 	"name": "dbt_rest_rest_service",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
+		"annotations": [],
 		"type": "RestService",
-		"annotations": []
-	},
-	"method": "POST",
-	"relativeUrl": "accounts/70471823507521/jobs/70471823526816/run/",
-	"headers": {
-		"Content-Type": "application/json"
-	},
-	"body": {
-		"cause": "Triggered from ADF"
-	},
-	"datasetSettings": {
-		"requestTimeout": "00:02:00"
+		"typeProperties": {
+			"url": "https://bx295.us1.dbt.com/api/v2/",
+			"authenticationType": "Anonymous",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDREOTg5MTBGLTEyN0QtNDNEMS1CNzc4LUZENkJFRENDRTgwQV8wMTQ3N2Y1YS01YjhhLTQ5MDQtYTAzNS05ZmUyYjIxMjA1MzgiDQp9"
+		}
 	}
 }
