@@ -1,10 +1,6 @@
 {
 	"name": "dbt_responses",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "dbt_rest_rest_service",
-			"type": "LinkedServiceReference"
-		},
 		"annotations": [],
 		"type": "RestResource",
 		"typeProperties": {

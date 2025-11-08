@@ -4,7 +4,7 @@
 		"description": "Pipeline to trigger and monitor a DBT Cloud job via REST API.",
 		"activities": [
 			{
-				"name": "Run DBT Job",
+				"name": "DBT prepare database job",
 				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
@@ -36,7 +36,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Run DBT Job",
+						"activity": "DBT prepare database job",
 						"dependencyConditions": [
 							"Succeeded"
 						]
