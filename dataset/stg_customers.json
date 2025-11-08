@@ -1,0 +1,16 @@
+{
+	"name": "stg_customers",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "pgsql_eurow_demo",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "PostgreSqlV2Table",
+		"schema": [],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "customers"
+		}
+	}
+}
