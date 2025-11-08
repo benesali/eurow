@@ -71,10 +71,10 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": " https://bx295.us1.dbt.com/api/v2/accounts/70471823507521/jobs/70471823526816/run/ ",
+					"url": "https://bx295.us1.dbt.com/api/v2/accounts/70471823507521/jobs/70471823526816/run/ ",
 					"method": "POST",
 					"headers": {
-						"Authorization": "dbtc_BevLdbcqy792KKI2z-BecpDh0OYoOWpLSchHMZqkCNZX0qJsjQ",
+						"Authorization": "\"Token dbtc_BevLdbcqy792KKI2z-BecpDh0OYoOWpLSchHMZqkCNZX0qJsjQ\"",
 						"Content-Type": "application/json"
 					},
 					"body": {
