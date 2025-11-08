@@ -3,6 +3,15 @@
 
 Demo projekt ukazuje kompletní datovou pipeline postavenou na **Azure Data Platform** s využitím **Azure Data Factory (ADF)**, **Azure SQL Database**, **Azure Data Lake Storage (ADLS)** a **dbt Cloud** pro transformace.
 
+## Technologie
+
+- **Azure Data Factory (ADF)** – orchestrátor pipeline
+- **Azure SQL Database** – hlavní datové úložiště
+- **Azure Data Lake Storage (ADLS)** – staging soubory (CSV/XLSX)
+- **dbt Cloud** – transformace, snapshoty, testy, dokumentace
+- **Power BI** – reporting nad Gold vrstvou
+
+
 DBT
 - **načítání zdrojová data (Bronze / Stage)**
 - **transformování je do očištěného modelu (Silver / Clean)**
@@ -11,7 +20,7 @@ DBT
 
 ADF tooling
 - **bulk load raw => stage**
-- **orchestrování dbt modelu/transformací**
+- **orchestrování stage vrstvy a puštění dbt**
 
 ---
 
@@ -26,15 +35,9 @@ ADF tooling
 | **Snapshots** | `snapshots_cln` | Historické záznamy (SCD2) pro audity a změnové sledování. |
 | **Report (Gold)** | `rpt` | Agregace a pohledy pro Power BI reporty. |
 
----
+Iiciálí příprava schémat a načtení dat do stage
 
-## Technologie
-
-- **Azure Data Factory (ADF)** – orchestrátor pipeline
-- **Azure SQL Database** – hlavní datový úložiště
-- **Azure Data Lake Storage (ADLS)** – staging soubory (CSV/XLSX)
-- **dbt Cloud** – transformace, snapshoty, testy, dokumentace
-- **Power BI** – reporting nad Gold vrstvou
+![Příprava schémat a načtení dat do stage](schemas_ppl.png)
 
 ---
 
