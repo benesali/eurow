@@ -197,7 +197,21 @@
 										"type": "DelimitedTextReadSettings"
 									}
 								},
+								"sink": {
+									"type": "AzurePostgreSqlSink",
+									"writeBatchSize": 1000000,
+									"writeBatchTimeout": "00:30:00",
+									"writeMethod": "CopyCommand"
+								},
 								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								},
 								"inputs": [
 									{
 										"referenceName": "ADLSDataset",
@@ -214,6 +228,12 @@
 							"inputs": [
 								{
 									"referenceName": "adls_customers",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "stg_customers",
 									"type": "DatasetReference"
 								}
 							]
@@ -254,29 +274,6 @@
 					"body": {
 						"cause": "Triggered from ADF pipeline"
 					}
-				}
-			},
-			{
-				"name": "CopyFromPostgreSQL",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "PostgreSqlV2Source",
-						"query": "SELECT * FROM \"MySchema\".\"MyTable\"",
-						"queryTimeout": "00:10:00"
-					},
-					"sink": {
-						"type": "<sink type>"
-					},
-					"enableStaging": false
 				}
 			}
 		],

@@ -1,0 +1,16 @@
+{
+	"name": "stg_customers",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzPgsql",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "customers"
+		}
+	}
+}
