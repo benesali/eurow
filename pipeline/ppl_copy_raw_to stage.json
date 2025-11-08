@@ -73,7 +73,7 @@
 					"body": {
 						"cause": "Triggered from ADF"
 					},
-					"timeout": "00:10:00"
+					"timeout": "00:01:00"
 				}
 			},
 			{
@@ -99,19 +99,6 @@
 						"type": "Expression"
 					}
 				}
-			},
-			{
-				"name": "Lookup1",
-				"type": "Lookup",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": []
 			}
 		],
 		"variables": {

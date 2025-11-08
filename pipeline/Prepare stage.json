@@ -1,0 +1,223 @@
+{
+	"name": "Prepare stage",
+	"properties": {
+		"description": "Pipeline to trigger and monitor a DBT Cloud job via REST API.",
+		"activities": [
+			{
+				"name": "Run DBT Job",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"headers": {
+						"Authorization": {
+							"value": "@{concat('Token ', pipeline().parameters.DbtApiToken)}",
+							"type": "Expression"
+						},
+						"Content-Type": "application/json"
+					},
+					"url": {
+						"value": "@{concat(pipeline().parameters.DbtBaseUrl, '/api/v2/accounts/', pipeline().parameters.AccountId, '/jobs/', pipeline().parameters.JobId, '/run/')}",
+						"type": "Expression"
+					},
+					"body": "{ \"cause\": \"Triggered from ADF pipeline\" }"
+				}
+			},
+			{
+				"name": "Set Run ID",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Run DBT Job",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "dbtRunId",
+					"value": {
+						"value": "@string(json(activity('Run DBT Job').output.Response).data.id)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Until DBT Job Finished",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "Set Run ID",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@or(equals(variables('dbtRunStatus'), 'Success'), equals(variables('dbtRunStatus'), 'Error'))",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Check DBT Run Status",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"method": "GET",
+								"headers": {
+									"Authorization": {
+										"value": "@{concat('Token ', pipeline().parameters.DbtApiToken)}",
+										"type": "Expression"
+									},
+									"Content-Type": "application/json"
+								},
+								"url": {
+									"value": "@{concat(pipeline().parameters.DbtBaseUrl, '/api/v2/accounts/', pipeline().parameters.AccountId, '/runs/', variables('dbtRunId'), '/')}",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set DBT Run Status",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Check DBT Run Status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "dbtRunStatus",
+								"value": {
+									"value": "@string(json(activity('Check DBT Run Status').output.Response).data.status_humanized)",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Wait 60s",
+							"type": "Wait",
+							"dependsOn": [
+								{
+									"activity": "Set DBT Run Status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 60
+							}
+						}
+					],
+					"timeout": "0.03:00:00"
+				}
+			},
+			{
+				"name": "If Success or Fail",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Until DBT Job Finished",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('dbtRunStatus'), 'Success')",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Fail Pipeline",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "DBT Cloud job failed. Check DBT Cloud run logs."
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Log DBT Success",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"method": "POST",
+								"url": "https://prod-12.westeurope.logic.azure.com/workflows/your-logging-endpoint",
+								"body": "{ \"message\": \"DBT job completed successfully\" }"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"JobId": {
+				"type": "String",
+				"defaultValue": "70471823526816"
+			},
+			"AccountId": {
+				"type": "String",
+				"defaultValue": "70471823507521"
+			},
+			"DbtApiToken": {
+				"type": "String",
+				"defaultValue": "dbtc_BevLdbcqy792KKI2z-BecpDh0OYoOWpLSchHMZqkCNZX0qJsjQ"
+			},
+			"DbtBaseUrl": {
+				"type": "String",
+				"defaultValue": "https://bx295.us1.dbt.com"
+			}
+		},
+		"variables": {
+			"dbtRunId": {
+				"type": "String"
+			},
+			"dbtRunStatus": {
+				"type": "String",
+				"defaultValue": "Running"
+			}
+		},
+		"annotations": []
+	}
+}
