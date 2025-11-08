@@ -26,11 +26,13 @@
 						"value": "@{concat(pipeline().parameters.DbtBaseUrl, '/api/v2/accounts/', pipeline().parameters.AccountId, '/jobs/', pipeline().parameters.JobId, '/run/')}",
 						"type": "Expression"
 					},
-					"body": "{ \"cause\": \"Triggered from ADF pipeline\" }"
+					"body": {
+						"cause": "Triggered from ADF pipeline"
+					}
 				}
 			},
 			{
-				"name": "Set Run ID",
+				"name": "Get Run ID",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
@@ -48,7 +50,7 @@
 				"typeProperties": {
 					"variableName": "dbtRunId",
 					"value": {
-						"value": "@string(json(activity('Run DBT Job').output.Response).data.id)",
+						"value": "@string(activity('Run DBT Job').output.data.id)",
 						"type": "Expression"
 					}
 				}
@@ -58,7 +60,7 @@
 				"type": "Until",
 				"dependsOn": [
 					{
-						"activity": "Set Run ID",
+						"activity": "Get Run ID",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -98,7 +100,7 @@
 							}
 						},
 						{
-							"name": "Set DBT Run Status",
+							"name": "Get DBT Run Status",
 							"type": "SetVariable",
 							"dependsOn": [
 								{
@@ -116,17 +118,17 @@
 							"typeProperties": {
 								"variableName": "dbtRunStatus",
 								"value": {
-									"value": "@string(json(activity('Check DBT Run Status').output.Response).data.status_humanized)",
+									"value": "@string(activity('Check DBT Run Status').output.data.status_humanized)\n",
 									"type": "Expression"
 								}
 							}
 						},
 						{
-							"name": "Wait 60s",
+							"name": "Wait 30s",
 							"type": "Wait",
 							"dependsOn": [
 								{
-									"activity": "Set DBT Run Status",
+									"activity": "Get DBT Run Status",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -134,7 +136,7 @@
 							],
 							"userProperties": [],
 							"typeProperties": {
-								"waitTimeInSeconds": 60
+								"waitTimeInSeconds": 35
 							}
 						}
 					],
@@ -165,16 +167,18 @@
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
-								"message": "DBT Cloud job failed. Check DBT Cloud run logs."
+								"message": "DBT Cloud job failed. Check DBT Cloud run logs.",
+								"errorCode": "400"
 							}
 						}
 					],
 					"ifTrueActivities": [
 						{
-							"name": "Log DBT Success",
-							"type": "WebActivity",
+							"name": "Move Raw data to stage",
+							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
+								"timeout": "0.12:00:00",
 								"retry": 0,
 								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
@@ -182,12 +186,81 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"method": "POST",
-								"url": "https://prod-12.westeurope.logic.azure.com/workflows/your-logging-endpoint",
-								"body": "{ \"message\": \"DBT job completed successfully\" }"
-							}
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "adls_customers",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "stg_sql_customers",
+									"type": "DatasetReference"
+								}
+							]
 						}
 					]
+				}
+			},
+			{
+				"name": "Run DBT transformations",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "If Success or Fail",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"headers": {
+						"Authorization": {
+							"value": "@{concat('Token ', pipeline().parameters.DbtApiToken)}",
+							"type": "Expression"
+						},
+						"Content-Type": "application/json"
+					},
+					"url": {
+						"value": "@{concat(pipeline().parameters.DbtBaseUrl, '/api/v2/accounts/', pipeline().parameters.AccountId, '/jobs/', pipeline().parameters.TransformJobId, '/run/')}",
+						"type": "Expression"
+					},
+					"body": {
+						"cause": "Triggered from ADF pipeline"
+					}
 				}
 			}
 		],
@@ -207,6 +280,10 @@
 			"DbtBaseUrl": {
 				"type": "String",
 				"defaultValue": "https://bx295.us1.dbt.com"
+			},
+			"TransformJobId": {
+				"type": "string",
+				"defaultValue": "PLACEHODER"
 			}
 		},
 		"variables": {
