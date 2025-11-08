@@ -1,0 +1,12 @@
+{
+	"name": "dbt_rest_rest_service",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://bx295.us1.dbt.com/api/v2/",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
