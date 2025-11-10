@@ -118,7 +118,7 @@
 							"typeProperties": {
 								"variableName": "dbtRunStatus",
 								"value": {
-									"value": "@string(activity('Check DBT Run Status').output.data.status_humanized)\n",
+									"value": "@string(activity('Check DBT Run Status').output.data.status_humanized)",
 									"type": "Expression"
 								}
 							}
@@ -367,41 +367,6 @@
 						}
 					]
 				}
-			},
-			{
-				"name": "Run DBT transformations",
-				"type": "WebActivity",
-				"dependsOn": [
-					{
-						"activity": "If Success or Fail",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"method": "POST",
-					"headers": {
-						"Authorization": {
-							"value": "@{concat('Token ', pipeline().parameters.DbtApiToken)}",
-							"type": "Expression"
-						},
-						"Content-Type": "application/json"
-					},
-					"url": {
-						"value": "@{concat(pipeline().parameters.DbtBaseUrl, '/api/v2/accounts/', pipeline().parameters.AccountId, '/jobs/', pipeline().parameters.TransformJobId, '/run/')}",
-						"type": "Expression"
-					},
-					"body": {
-						"cause": "Triggered from ADF pipeline"
-					}
-				}
 			}
 		],
 		"parameters": {
@@ -415,7 +380,7 @@
 			},
 			"DbtApiToken": {
 				"type": "String",
-				"defaultValue": "dbtc_BevLdbcqy792KKI2z-BecpDh0OYoOWpLSchHMZqkCNZX0qJsjQ"
+				"defaultValue": "dbtc_4Y8Foik3iR3M1IX8TlM-zUgzMBa1NvkhItmMONsdUzngGGqG1I"
 			},
 			"DbtBaseUrl": {
 				"type": "String",
@@ -423,7 +388,7 @@
 			},
 			"TransformJobId": {
 				"type": "string",
-				"defaultValue": "PLACEHODER"
+				"defaultValue": "70471823527740"
 			}
 		},
 		"variables": {
