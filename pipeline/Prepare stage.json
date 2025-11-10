@@ -211,13 +211,7 @@
 										"allowDataTruncation": true,
 										"treatBooleanAsNumber": false
 									}
-								},
-								"outputs": [
-									{
-										"referenceName": "PostgreSQLDataset",
-										"type": "DatasetReference"
-									}
-								]
+								}
 							},
 							"inputs": [
 								{
@@ -267,13 +261,7 @@
 										"allowDataTruncation": true,
 										"treatBooleanAsNumber": false
 									}
-								},
-								"outputs": [
-									{
-										"referenceName": "PostgreSQLDataset",
-										"type": "DatasetReference"
-									}
-								]
+								}
 							},
 							"inputs": [
 								{
@@ -326,13 +314,7 @@
 										"allowDataTruncation": true,
 										"treatBooleanAsNumber": false
 									}
-								},
-								"outputs": [
-									{
-										"referenceName": "PostgreSQLDataset",
-										"type": "DatasetReference"
-									}
-								]
+								}
 							},
 							"inputs": [
 								{
