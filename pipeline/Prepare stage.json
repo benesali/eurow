@@ -23,7 +23,7 @@
 						"Content-Type": "application/json"
 					},
 					"url": {
-						"value": "@{concat(pipeline().parameters.DbtBaseUrl, '/api/v2/accounts/', pipeline().parameters.AccountId, '/jobs/', pipeline().parameters.JobId, '/run/')}",
+						"value": "@{concat(pipeline().parameters.DbtBaseUrl, '/api/v2/accounts/', pipeline().parameters.AccountId, '/jobs/', pipeline().parameters.PrepSchemaJobId, '/run/')}",
 						"type": "Expression"
 					},
 					"body": {
@@ -405,9 +405,9 @@
 			}
 		],
 		"parameters": {
-			"JobId": {
+			"PrepSchemaJobId": {
 				"type": "String",
-				"defaultValue": "70471823526816"
+				"defaultValue": "70471823527740"
 			},
 			"AccountId": {
 				"type": "String",
