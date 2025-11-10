@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "DS3_Payments_formatted.csv",
 				"folderPath": "raw",
 				"fileSystem": "datalake"
 			},
