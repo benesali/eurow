@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "eurowadf"
 		},
+		"AzPgsql_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'AzPgsql'"
+		},
 		"adls_raw_adf_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'adls_raw_adf'"
@@ -15,169 +19,27 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ewdatalake'"
 		},
-		"sql_staging_adf_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'sql_staging_adf'"
+		"AzPgsql_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "pgdqleurow.postgres.database.azure.com"
 		},
-		"sqldb_eurow_demo_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'sqldb_eurow_demo'"
+		"AzPgsql_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "ewdemo"
+		},
+		"AzPgsql_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "abene"
 		},
 		"adls_raw_adf_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://eurowdemo.dfs.core.windows.net/"
-		},
-		"sql_staging_adf_properties_typeProperties_server": {
-			"type": "string",
-			"defaultValue": "sql-server-ew-demo.database.windows.net"
-		},
-		"sql_staging_adf_properties_typeProperties_database": {
-			"type": "string",
-			"defaultValue": "ewdemo"
-		},
-		"sql_staging_adf_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "abene"
-		},
-		"sqldb_eurow_demo_properties_typeProperties_server": {
-			"type": "string",
-			"defaultValue": "sql-server-ew-demo.database.windows.net"
-		},
-		"sqldb_eurow_demo_properties_typeProperties_database": {
-			"type": "string",
-			"defaultValue": "ewdemo"
-		},
-		"sqldb_eurow_demo_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "abene"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/ppl_copy_raw_to stage')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Raw to stage",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "adls_customers",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "stg_sql_customers",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Set schemas DBT",
-						"type": "WebHook",
-						"dependsOn": [],
-						"policy": {
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": " https://bx295.us1.dbt.com/api/v2/accounts/70471823507521/jobs/70471823526816/run/ ",
-							"method": "POST",
-							"headers": {
-								"Authorization": "Token dbtc_BevLdbcqy792KKI2z-BecpDh0OYoOWpLSchHMZqkCNZX0qJsjQ",
-								"Content-Type": "application/json"
-							},
-							"body": {
-								"cause": "Triggered from ADF"
-							},
-							"timeout": "00:10:00"
-						}
-					},
-					{
-						"name": "job status",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Set schemas DBT",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "dbtRunId",
-							"value": {
-								"value": "@string(activity('Set schemas DBT').output.data.id)\n",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"variables": {
-					"dbtRunId": {
-						"type": "String"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/adls_customers')]",
-				"[concat(variables('factoryId'), '/datasets/stg_sql_customers')]"
-			]
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/adls_customers')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
@@ -302,16 +164,16 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/stg_sql_customers')]",
+			"name": "[concat(parameters('factoryName'), '/stg_customers')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "sqldb_eurow_demo",
+					"referenceName": "AzPgsql",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "AzureSqlTable",
+				"type": "AzurePostgreSqlTable",
 				"schema": [],
 				"typeProperties": {
 					"schema": "stg",
@@ -319,8 +181,73 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sqldb_eurow_demo')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzPgsql')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/stg_invoices')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzPgsql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "stg",
+					"table": "invoices"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzPgsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/stg_payments')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzPgsql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "stg",
+					"table": "payments"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzPgsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzPgsql')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzurePostgreSql",
+				"version": "2.0",
+				"typeProperties": {
+					"server": "[parameters('AzPgsql_properties_typeProperties_server')]",
+					"port": "5432",
+					"database": "[parameters('AzPgsql_properties_typeProperties_database')]",
+					"sslMode": 2,
+					"username": "[parameters('AzPgsql_properties_typeProperties_username')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('AzPgsql_password')]"
+					},
+					"authenticationType": "Basic"
+				}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/adls_raw_adf')]",
@@ -353,99 +280,391 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/sql_staging_adf')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/Prepare stage')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"server": "[parameters('sql_staging_adf_properties_typeProperties_server')]",
-					"database": "[parameters('sql_staging_adf_properties_typeProperties_database')]",
-					"encrypt": "mandatory",
-					"trustServerCertificate": false,
-					"authenticationType": "SQL",
-					"userName": "[parameters('sql_staging_adf_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('sql_staging_adf_password')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/sqldb_eurow_demo')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"server": "[parameters('sqldb_eurow_demo_properties_typeProperties_server')]",
-					"database": "[parameters('sqldb_eurow_demo_properties_typeProperties_database')]",
-					"encrypt": "mandatory",
-					"trustServerCertificate": false,
-					"authenticationType": "SQL",
-					"userName": "[parameters('sqldb_eurow_demo_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('sqldb_eurow_demo_password')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "adls_customers",
-								"type": "DatasetReference"
+				"description": "Pipeline to trigger and monitor a DBT Cloud job via REST API.",
+				"activities": [
+					{
+						"name": "DBT prepare database job",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {
+								"Authorization": {
+									"value": "@{concat('Token ', pipeline().parameters.DbtApiToken)}",
+									"type": "Expression"
+								},
+								"Content-Type": "application/json"
 							},
-							"name": "adslCustomers"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "stg_sql_customers",
-								"type": "DatasetReference"
+							"url": {
+								"value": "@{concat(pipeline().parameters.DbtBaseUrl, '/api/v2/accounts/', pipeline().parameters.AccountId, '/jobs/', pipeline().parameters.PrepSchemaJobId, '/run/')}",
+								"type": "Expression"
 							},
-							"name": "sqlCustomers",
-							"description": "Export data to sql_custoners"
+							"body": {
+								"cause": "Triggered from ADF pipeline"
+							}
 						}
-					],
-					"transformations": [],
-					"scriptLines": [
-						"source(output(",
-						"          {CustomerId     CustomerName     CustomerCategory} as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> adslCustomers",
-						"adslCustomers sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> sqlCustomers"
-					]
-				}
+					},
+					{
+						"name": "Get Run ID",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "DBT prepare database job",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "dbtRunId",
+							"value": {
+								"value": "@string(activity('DBT prepare database job').output.data.id)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Until DBT Job Finished",
+						"type": "Until",
+						"dependsOn": [
+							{
+								"activity": "Get Run ID",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@or(equals(variables('dbtRunStatus'), 'Success'), equals(variables('dbtRunStatus'), 'Error'))",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Check DBT Run Status",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"method": "GET",
+										"headers": {
+											"Authorization": {
+												"value": "@{concat('Token ', pipeline().parameters.DbtApiToken)}",
+												"type": "Expression"
+											},
+											"Content-Type": "application/json"
+										},
+										"url": {
+											"value": "@{concat(pipeline().parameters.DbtBaseUrl, '/api/v2/accounts/', pipeline().parameters.AccountId, '/runs/', variables('dbtRunId'), '/')}",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Get DBT Run Status",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Check DBT Run Status",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "dbtRunStatus",
+										"value": {
+											"value": "@string(activity('Check DBT Run Status').output.data.status_humanized)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Wait 30s",
+									"type": "Wait",
+									"dependsOn": [
+										{
+											"activity": "Get DBT Run Status",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"waitTimeInSeconds": 35
+									}
+								}
+							],
+							"timeout": "0.03:00:00"
+						}
+					},
+					{
+						"name": "If Success or Fail",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Until DBT Job Finished",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(variables('dbtRunStatus'), 'Success')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Fail Pipeline",
+									"type": "Fail",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"message": "DBT Cloud job failed. Check DBT Cloud run logs.",
+										"errorCode": "400"
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "Move Raw data to stage",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "AzurePostgreSqlSink",
+											"writeBatchSize": 1000000,
+											"writeBatchTimeout": "00:30:00",
+											"writeMethod": "CopyCommand"
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "adls_customers",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "stg_customers",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								},
+								{
+									"name": "Move Raw data to stage_copy1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "ExcelSource",
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											}
+										},
+										"sink": {
+											"type": "AzurePostgreSqlSink",
+											"writeBatchSize": 1000000,
+											"writeBatchTimeout": "00:30:00",
+											"writeMethod": "CopyCommand"
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "adls_invoices",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "stg_invoices",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								},
+								{
+									"name": "Move Raw data to stage_copy1_copy1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "AzurePostgreSqlSink",
+											"writeBatchSize": 1000000,
+											"writeBatchTimeout": "00:30:00",
+											"writeMethod": "CopyCommand"
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "adls_payments",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "stg_payments",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"PrepSchemaJobId": {
+						"type": "String",
+						"defaultValue": "70471823527740"
+					},
+					"AccountId": {
+						"type": "String",
+						"defaultValue": "70471823507521"
+					},
+					"DbtApiToken": {
+						"type": "String",
+						"defaultValue": "dbtc_4Y8Foik3iR3M1IX8TlM-zUgzMBa1NvkhItmMONsdUzngGGqG1I"
+					},
+					"DbtBaseUrl": {
+						"type": "String",
+						"defaultValue": "https://bx295.us1.dbt.com"
+					},
+					"TransformJobId": {
+						"type": "string",
+						"defaultValue": "70471823527740"
+					}
+				},
+				"variables": {
+					"dbtRunId": {
+						"type": "String"
+					},
+					"dbtRunStatus": {
+						"type": "String",
+						"defaultValue": "Running"
+					}
+				},
+				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/adls_customers')]",
-				"[concat(variables('factoryId'), '/datasets/stg_sql_customers')]"
+				"[concat(variables('factoryId'), '/datasets/stg_customers')]",
+				"[concat(variables('factoryId'), '/datasets/adls_invoices')]",
+				"[concat(variables('factoryId'), '/datasets/stg_invoices')]",
+				"[concat(variables('factoryId'), '/datasets/adls_payments')]",
+				"[concat(variables('factoryId'), '/datasets/stg_payments')]"
 			]
 		}
 	]

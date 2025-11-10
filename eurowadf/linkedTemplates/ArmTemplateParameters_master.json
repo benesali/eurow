@@ -5,38 +5,26 @@
 		"factoryName": {
 			"value": "eurowadf"
 		},
+		"AzPgsql_password": {
+			"value": ""
+		},
 		"adls_raw_adf_accountKey": {
 			"value": ""
 		},
 		"ewdatalake_connectionString": {
 			"value": ""
 		},
-		"sql_staging_adf_password": {
-			"value": ""
+		"AzPgsql_properties_typeProperties_server": {
+			"value": "pgdqleurow.postgres.database.azure.com"
 		},
-		"sqldb_eurow_demo_password": {
-			"value": ""
+		"AzPgsql_properties_typeProperties_database": {
+			"value": "ewdemo"
+		},
+		"AzPgsql_properties_typeProperties_username": {
+			"value": "abene"
 		},
 		"adls_raw_adf_properties_typeProperties_url": {
 			"value": "https://eurowdemo.dfs.core.windows.net/"
-		},
-		"sql_staging_adf_properties_typeProperties_server": {
-			"value": "sql-server-ew-demo.database.windows.net"
-		},
-		"sql_staging_adf_properties_typeProperties_database": {
-			"value": "ewdemo"
-		},
-		"sql_staging_adf_properties_typeProperties_userName": {
-			"value": "abene"
-		},
-		"sqldb_eurow_demo_properties_typeProperties_server": {
-			"value": "sql-server-ew-demo.database.windows.net"
-		},
-		"sqldb_eurow_demo_properties_typeProperties_database": {
-			"value": "ewdemo"
-		},
-		"sqldb_eurow_demo_properties_typeProperties_userName": {
-			"value": "abene"
 		},
 		"containerUri": {
 			"value": ""
