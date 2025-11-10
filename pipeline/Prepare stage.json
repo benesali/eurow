@@ -174,7 +174,7 @@
 					],
 					"ifTrueActivities": [
 						{
-							"name": "Move Raw data to stage",
+							"name": "Move Raw data to customers",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -206,6 +206,44 @@
 								"enableStaging": false,
 								"translator": {
 									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "CustomerId",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "customerid",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "CustomerName",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "customername",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "CustomerCategory",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "customercategory",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										}
+									],
 									"typeConversion": true,
 									"typeConversionSettings": {
 										"allowDataTruncation": true,
@@ -227,7 +265,7 @@
 							]
 						},
 						{
-							"name": "Move Raw data to stage_copy1",
+							"name": "Move Raw data to invoices",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -256,6 +294,116 @@
 								"enableStaging": false,
 								"translator": {
 									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "CompanyId",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "companyid",
+												"type": "Int32",
+												"physicalType": "integer"
+											}
+										},
+										{
+											"source": {
+												"name": "CustomerId",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "customerid",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "CountryId",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "countryid",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "DocumentNumber",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "documentnumber",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "DocumentType",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "documenttype",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "PostingDate",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "postingdate",
+												"type": "DateTime",
+												"physicalType": "date"
+											}
+										},
+										{
+											"source": {
+												"name": "Entry",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "entry",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "EntryType",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "entrytype",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "Amount",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "amount",
+												"type": "Decimal",
+												"physicalType": "numeric"
+											}
+										}
+									],
 									"typeConversion": true,
 									"typeConversionSettings": {
 										"allowDataTruncation": true,
@@ -277,9 +425,16 @@
 							]
 						},
 						{
-							"name": "Move Raw data to stage_copy1_copy1",
+							"name": "Move Raw data to payments",
 							"type": "Copy",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "datetime_convert_postingdate",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,
@@ -309,16 +464,151 @@
 								"enableStaging": false,
 								"translator": {
 									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "CompanyId",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "companyid",
+												"type": "Int32",
+												"physicalType": "integer"
+											}
+										},
+										{
+											"source": {
+												"name": "CustomerId",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "customerid",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "CountryId",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "countryid",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "DocumentNumber",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "documentnumber",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "DocumentType",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "documenttype",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "PostingDate",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "postingdate",
+												"type": "DateTime",
+												"physicalType": "date"
+											}
+										},
+										{
+											"source": {
+												"name": "Entry",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "entry",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "EntryType",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "entrytype",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "Amount",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "amount",
+												"type": "Decimal",
+												"physicalType": "numeric"
+											}
+										},
+										{
+											"source": {
+												"name": "InvoiceNumber",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "invoicenumber",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										},
+										{
+											"source": {
+												"name": "InvoiceEntry",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "invoiceentry",
+												"type": "String",
+												"physicalType": "character varying"
+											}
+										}
+									],
 									"typeConversion": true,
 									"typeConversionSettings": {
 										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
+										"treatBooleanAsNumber": false,
+										"dateFormat": "yyyy-MM-dd"
 									}
 								}
 							},
 							"inputs": [
 								{
-									"referenceName": "adls_payments",
+									"referenceName": "adls_payments_formatted",
 									"type": "DatasetReference"
 								}
 							],
@@ -328,6 +618,30 @@
 									"type": "DatasetReference"
 								}
 							]
+						},
+						{
+							"name": "datetime_convert_postingdate",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "datetime_convert_postingdate",
+									"type": "DataFlowReference"
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
 						}
 					]
 				}

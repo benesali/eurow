@@ -1,0 +1,74 @@
+{
+	"name": "datetime_convert_postingdate",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "adls_payments",
+						"type": "DatasetReference"
+					},
+					"name": "adlspaymentsvalidated"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "adls_payments_formatted",
+						"type": "DatasetReference"
+					},
+					"name": "adlsPaymentsFormatted"
+				}
+			],
+			"transformations": [
+				{
+					"name": "postingdateFormatted",
+					"description": "correct datetime postigdate to pgswl format"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CompanyId as string,",
+				"          CustomerId as string,",
+				"          CountryId as string,",
+				"          DocumentNumber as string,",
+				"          DocumentType as string,",
+				"          PostingDate as string,",
+				"          Entry as string,",
+				"          EntryType as string,",
+				"          Amount as string,",
+				"          InvoiceNumber as string,",
+				"          InvoiceEntry as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> adlspaymentsvalidated",
+				"adlspaymentsvalidated derive(PostingDate = toDate(PostingDate, 'dd.MM.yyyy')) ~> postingdateFormatted",
+				"postingdateFormatted sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          CompanyId as string,",
+				"          CustomerId as string,",
+				"          CountryId as string,",
+				"          DocumentNumber as string,",
+				"          DocumentType as string,",
+				"          PostingDate as string,",
+				"          Entry as string,",
+				"          EntryType as string,",
+				"          Amount as string,",
+				"          InvoiceNumber as string,",
+				"          InvoiceEntry as string",
+				"     ),",
+				"     partitionFileNames:['DS3_Payments_formatted.csv'],",
+				"     truncate: true,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> adlsPaymentsFormatted"
+			]
+		}
+	}
+}

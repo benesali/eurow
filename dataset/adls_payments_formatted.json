@@ -1,5 +1,5 @@
 {
-	"name": "adls_payments",
+	"name": "adls_payments_formatted",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "adls_raw_adf",
@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "DS3_Payments.csv",
+				"fileName": "DS3_Payments_formatted.csv",
 				"folderPath": "raw",
 				"fileSystem": "datalake"
 			},
