@@ -645,6 +645,41 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "DBT cln transform data",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "If Success or Fail",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"headers": {
+						"Authorization": {
+							"value": "@{concat('Token ', pipeline().parameters.DbtApiToken)}",
+							"type": "Expression"
+						},
+						"Content-Type": "application/json"
+					},
+					"url": {
+						"value": "@{concat(pipeline().parameters.DbtBaseUrl, '/api/v2/accounts/', pipeline().parameters.AccountId, '/jobs/', pipeline().parameters.TransformJobId, '/run/')}",
+						"type": "Expression"
+					},
+					"body": {
+						"cause": "Triggered from ADF pipeline"
+					}
+				}
 			}
 		],
 		"parameters": {
