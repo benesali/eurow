@@ -212,12 +212,6 @@
 										"treatBooleanAsNumber": false
 									}
 								},
-								"inputs": [
-									{
-										"referenceName": "ADLSDataset",
-										"type": "DatasetReference"
-									}
-								],
 								"outputs": [
 									{
 										"referenceName": "PostgreSQLDataset",
@@ -274,12 +268,6 @@
 										"treatBooleanAsNumber": false
 									}
 								},
-								"inputs": [
-									{
-										"referenceName": "ADLSDataset",
-										"type": "DatasetReference"
-									}
-								],
 								"outputs": [
 									{
 										"referenceName": "PostgreSQLDataset",
@@ -339,12 +327,6 @@
 										"treatBooleanAsNumber": false
 									}
 								},
-								"inputs": [
-									{
-										"referenceName": "ADLSDataset",
-										"type": "DatasetReference"
-									}
-								],
 								"outputs": [
 									{
 										"referenceName": "PostgreSQLDataset",
