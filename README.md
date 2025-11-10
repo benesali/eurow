@@ -52,6 +52,9 @@ graph TD
     E -->|"Refresh"| F["Power BI Dataset"]
 ```
 
+![alt text](prepare_db_stage.png)
+
+
 ## BASIC model (gold tables tbd)
 ```mermaid
 erDiagram

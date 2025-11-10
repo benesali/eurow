@@ -2,7 +2,7 @@
 {{
     config(
         target_schema='snapshots_cln',
-        unique_key='PaymentsNumber',
+        unique_key='PaymentNumber',
         strategy='check',
         check_cols=['CustomerId', 'PostingDate', 'Amount', 'InvoiceNumber'],
         invalidate_hard_deletes=True
