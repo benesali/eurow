@@ -94,3 +94,20 @@ erDiagram
     CUSTOMERS ||--o{ PAYMENTS : "makes payments"
     INVOICES ||--o{ PAYMENTS : "are paid by"
 ```
+
+
+## Gold tables
+
+
+### CUSTOMER balance
+
+    CustomerId INT,                           -- id zakaznika
+    CustomerName VARCHAR(255),
+    CustomerCategory VARCHAR(255),
+    invoice_month DATE,                        -- mesic fakturace (Datum, první den mesice)
+    total_invoices DECIMAL(18,2),              -- Celková fakturovaná částka
+    total_paid DECIMAL(18,2),                  -- zaplaceno celkem
+    total_remaining DECIMAL(18,2),             -- celkovy zustatek k zaplace
+    open_invoices INT,                         -- pocet otevrenych faktur
+    paid_invoices INT                          -- pocet zaplacenych faktur
+    partial_invoices INT                       -- pocet castecne uhrazenych faktur
