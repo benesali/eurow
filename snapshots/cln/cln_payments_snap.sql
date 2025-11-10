@@ -2,9 +2,9 @@
 {{
     config(
         target_schema='snapshots_cln',
-        unique_key='PaymentNumber',
+        unique_key='PaymentsNumber',
         strategy='check',
-        check_cols=['CustomerId', 'Amount', 'InvoiceNumber', 'PostingDate'],
+        check_cols=['CustomerId', 'PostingDate', 'Amount', 'InvoiceNumber'],
         invalidate_hard_deletes=True
     )
 }}
@@ -12,5 +12,4 @@
 {{ select_all('cln_payments') }}
 
 {{ log("Snapshot  " ~ this ~ " created.", info=True) }}
-
 {% endsnapshot %}
