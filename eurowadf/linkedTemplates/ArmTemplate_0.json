@@ -207,7 +207,47 @@
 				},
 				"schema": [
 					{
-						"name": "CompanyId;CustomerId;CountryId;DocumentNumber;DocumentType;PostingDate;Entry;EntryType;Amount;InvoiceNumber;InvoiceEntry",
+						"name": "CompanyId",
+						"type": "String"
+					},
+					{
+						"name": "CustomerId",
+						"type": "String"
+					},
+					{
+						"name": "CountryId",
+						"type": "String"
+					},
+					{
+						"name": "DocumentNumber",
+						"type": "String"
+					},
+					{
+						"name": "DocumentType",
+						"type": "String"
+					},
+					{
+						"name": "PostingDate",
+						"type": "String"
+					},
+					{
+						"name": "Entry",
+						"type": "String"
+					},
+					{
+						"name": "EntryType",
+						"type": "String"
+					},
+					{
+						"name": "Amount",
+						"type": "String"
+					},
+					{
+						"name": "InvoiceNumber",
+						"type": "String"
+					},
+					{
+						"name": "InvoiceEntry",
 						"type": "String"
 					}
 				]
@@ -277,6 +317,159 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzPgsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/adls_payments_formatted')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adls_raw_adf",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "DS3_Payments_Formatted.csv",
+						"folderPath": "raw",
+						"fileSystem": "datalake"
+					},
+					"columnDelimiter": ";",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CompanyId",
+						"type": "String"
+					},
+					{
+						"name": "CustomerId",
+						"type": "String"
+					},
+					{
+						"name": "CountryId",
+						"type": "String"
+					},
+					{
+						"name": "DocumentNumber",
+						"type": "String"
+					},
+					{
+						"name": "DocumentType",
+						"type": "String"
+					},
+					{
+						"name": "PostingDate",
+						"type": "String"
+					},
+					{
+						"name": "Entry",
+						"type": "String"
+					},
+					{
+						"name": "EntryType",
+						"type": "String"
+					},
+					{
+						"name": "Amount",
+						"type": "String"
+					},
+					{
+						"name": "InvoiceNumber",
+						"type": "String"
+					},
+					{
+						"name": "InvoiceEntry",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adls_raw_adf')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/datetime_convert_postingdate')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "adls_payments",
+								"type": "DatasetReference"
+							},
+							"name": "adlspaymentsvalidated"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "adls_payments_formatted",
+								"type": "DatasetReference"
+							},
+							"name": "adlsPaymentsFormatted"
+						}
+					],
+					"transformations": [
+						{
+							"name": "postingdateFormatted",
+							"description": "correct datetime postigdate to pgswl format"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CompanyId as string,",
+						"          CustomerId as string,",
+						"          CountryId as string,",
+						"          DocumentNumber as string,",
+						"          DocumentType as string,",
+						"          PostingDate as string,",
+						"          Entry as string,",
+						"          EntryType as string,",
+						"          Amount as string,",
+						"          InvoiceNumber as string,",
+						"          InvoiceEntry as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> adlspaymentsvalidated",
+						"adlspaymentsvalidated derive(PostingDate = toDate(PostingDate, 'dd.MM.yyyy')) ~> postingdateFormatted",
+						"postingdateFormatted sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          CompanyId as string,",
+						"          CustomerId as string,",
+						"          CountryId as string,",
+						"          DocumentNumber as string,",
+						"          DocumentType as string,",
+						"          PostingDate as string,",
+						"          Entry as string,",
+						"          EntryType as string,",
+						"          Amount as string,",
+						"          InvoiceNumber as string,",
+						"          InvoiceEntry as string",
+						"     ),",
+						"     partitionFileNames:['DS3_Payments_Formatted.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> adlsPaymentsFormatted"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/adls_payments')]",
+				"[concat(variables('factoryId'), '/datasets/adls_payments_formatted')]"
 			]
 		},
 		{
@@ -457,7 +650,7 @@
 							],
 							"ifTrueActivities": [
 								{
-									"name": "Move Raw data to stage",
+									"name": "Move Raw data to customers",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -489,6 +682,44 @@
 										"enableStaging": false,
 										"translator": {
 											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"name": "CustomerId",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "customerid",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "CustomerName",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "customername",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "CustomerCategory",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "customercategory",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												}
+											],
 											"typeConversion": true,
 											"typeConversionSettings": {
 												"allowDataTruncation": true,
@@ -512,7 +743,7 @@
 									]
 								},
 								{
-									"name": "Move Raw data to stage_copy1",
+									"name": "Move Raw data to invoices",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -541,6 +772,116 @@
 										"enableStaging": false,
 										"translator": {
 											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"name": "CompanyId",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "companyid",
+														"type": "Int32",
+														"physicalType": "integer"
+													}
+												},
+												{
+													"source": {
+														"name": "CustomerId",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "customerid",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "CountryId",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "countryid",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "DocumentNumber",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "documentnumber",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "DocumentType",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "documenttype",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "PostingDate",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "postingdate",
+														"type": "DateTime",
+														"physicalType": "date"
+													}
+												},
+												{
+													"source": {
+														"name": "Entry",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "entry",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "EntryType",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "entrytype",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "Amount",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "amount",
+														"type": "Decimal",
+														"physicalType": "numeric"
+													}
+												}
+											],
 											"typeConversion": true,
 											"typeConversionSettings": {
 												"allowDataTruncation": true,
@@ -564,9 +905,16 @@
 									]
 								},
 								{
-									"name": "Move Raw data to stage_copy1_copy1",
+									"name": "Move Raw data to payments",
 									"type": "Copy",
-									"dependsOn": [],
+									"dependsOn": [
+										{
+											"activity": "datetime_convert_postingdate",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
 									"policy": {
 										"timeout": "0.12:00:00",
 										"retry": 0,
@@ -596,16 +944,151 @@
 										"enableStaging": false,
 										"translator": {
 											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"name": "CompanyId",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "companyid",
+														"type": "Int32",
+														"physicalType": "integer"
+													}
+												},
+												{
+													"source": {
+														"name": "CustomerId",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "customerid",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "CountryId",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "countryid",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "DocumentNumber",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "documentnumber",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "DocumentType",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "documenttype",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "PostingDate",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "postingdate",
+														"type": "DateTime",
+														"physicalType": "date"
+													}
+												},
+												{
+													"source": {
+														"name": "Entry",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "entry",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "EntryType",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "entrytype",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "Amount",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "amount",
+														"type": "Decimal",
+														"physicalType": "numeric"
+													}
+												},
+												{
+													"source": {
+														"name": "InvoiceNumber",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "invoicenumber",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												},
+												{
+													"source": {
+														"name": "InvoiceEntry",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "invoiceentry",
+														"type": "String",
+														"physicalType": "character varying"
+													}
+												}
+											],
 											"typeConversion": true,
 											"typeConversionSettings": {
 												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
+												"treatBooleanAsNumber": false,
+												"dateFormat": "yyyy-MM-dd"
 											}
 										}
 									},
 									"inputs": [
 										{
-											"referenceName": "adls_payments",
+											"referenceName": "adls_payments_formatted",
 											"type": "DatasetReference",
 											"parameters": {}
 										}
@@ -617,8 +1100,73 @@
 											"parameters": {}
 										}
 									]
+								},
+								{
+									"name": "datetime_convert_postingdate",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "datetime_convert_postingdate",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"adlspaymentsvalidated": {},
+												"adlsPaymentsFormatted": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
 								}
 							]
+						}
+					},
+					{
+						"name": "DBT cln transform data",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "If Success or Fail",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {
+								"Authorization": {
+									"value": "@{concat('Token ', pipeline().parameters.DbtApiToken)}",
+									"type": "Expression"
+								},
+								"Content-Type": "application/json"
+							},
+							"url": {
+								"value": "@{concat(pipeline().parameters.DbtBaseUrl, '/api/v2/accounts/', pipeline().parameters.AccountId, '/jobs/', pipeline().parameters.TransformJobId, '/run/')}",
+								"type": "Expression"
+							},
+							"body": {
+								"cause": "Triggered from ADF pipeline"
+							}
 						}
 					}
 				],
@@ -644,7 +1192,7 @@
 					},
 					"TransformJobId": {
 						"type": "string",
-						"defaultValue": "70471823527740"
+						"defaultValue": "70471823527753"
 					}
 				},
 				"variables": {
@@ -663,8 +1211,9 @@
 				"[concat(variables('factoryId'), '/datasets/stg_customers')]",
 				"[concat(variables('factoryId'), '/datasets/adls_invoices')]",
 				"[concat(variables('factoryId'), '/datasets/stg_invoices')]",
-				"[concat(variables('factoryId'), '/datasets/adls_payments')]",
-				"[concat(variables('factoryId'), '/datasets/stg_payments')]"
+				"[concat(variables('factoryId'), '/datasets/adls_payments_formatted')]",
+				"[concat(variables('factoryId'), '/datasets/stg_payments')]",
+				"[concat(variables('factoryId'), '/dataflows/datetime_convert_postingdate')]"
 			]
 		}
 	]
