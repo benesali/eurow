@@ -50,7 +50,7 @@
 				"typeProperties": {
 					"variableName": "dbtRunId",
 					"value": {
-						"value": "@string(activity('Run DBT Job').output.data.id)",
+						"value": "@string(activity('DBT prepare database job').output.data.id)",
 						"type": "Expression"
 					}
 				}
