@@ -1,40 +1,31 @@
 {{ config(
     materialized='incremental',
     schema='cln',
-    alias='payments',
-    unique_key='Entry',
-    on_schema_change='sync'
+    unique_key='PaymentNumber'
 ) }}
-
--- incremental load from bronze do cln aka Silver
--- set PK for increment
 
 {{ log("Starting transform: " ~ this.identifier, info=True) }}
 
-with src as (
-    select
-        CompanyId,
-        trim(CustomerId) as CustomerId,
-        upper(trim(CountryId)) as CountryId,
-        trim(DocumentNumber) as PaymentNumber,
-        trim(DocumentType) as DocumentType,
-        try_cast(PostingDate as date) as PostingDate,
-        trim(Entry) as Entry,
-        trim(EntryType) as EntryType,
-        try_cast(Amount as decimal(18,2)) as Amount,
-        trim(InvoiceNumber) as InvoiceNumber,
-        trim(InvoiceEntry) as InvoiceEntry,
-        getdate() as LoadDate
-    from {{ source('stg', 'payments') }}
-    where PaymentNumber is not null
+-- Inkrementální načítání z bronze do cln aka Silver pro PostgreSQL
 
-)
-
-select *
-from src
+select
+    CompanyId,
+    trim(CustomerId) as CustomerId,
+    upper(trim(CountryId)) as CountryId,
+    trim(DocumentNumber) as PaymentNumber,
+    trim(DocumentType) as DocumentType,
+    CAST(PostingDate AS DATE) as PostingDate,
+    trim(Entry) as Entry,
+    trim(EntryType) as EntryType,
+    CAST(Amount AS DECIMAL(18,2)) as Amount,
+    trim(InvoiceNumber) as InvoiceNumber,
+    trim(InvoiceEntry) as InvoiceEntry,
+    CURRENT_TIMESTAMP as LoadDate
+from {{ source('stg', 'payments') }}
+where DocumentNumber is not null
 
 {% if is_incremental() %}
-    where LoadDate > (select max(LoadDate) from {{ this }})
+    and CURRENT_TIMESTAMP > (select max(LoadDate) from {{ this }})
 {% endif %}
 
 {{ log("Transformation of " ~ this.identifier ~ " finished OK.", info=True) }}

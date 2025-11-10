@@ -1,14 +1,14 @@
 # -----------------------------------------------
 # dbt Project Configuration
 
-name: 'eurow_demo'
+name: 'eurowag'
 version: '1.0.0'
 config-version: 2
 
 dbt-cloud:
   project-id: 70471823522831
 
-profile: 'default'
+profile: 'eurowag'
 
 # -----------------------------------------------
 # File paths
@@ -24,7 +24,7 @@ snapshot-paths: ["snapshots"]
 # Build and clean targets
 
 target-path: "target"     # SQL complied files here
-clean-targets: 
+clean-targets:
   - "target"
   - "dbt_packages"
 
@@ -32,7 +32,7 @@ clean-targets:
 # Model configuration
 
 models:
-  eurow_demo:               
+  eurow_demo:
     stg:                    # Bronze layer
       +materialized: table  # Full load
       +schema: stg

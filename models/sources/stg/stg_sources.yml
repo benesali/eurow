@@ -1,0 +1,11 @@
+version: 2
+sources:
+  - name: stg
+    schema: stg
+    tables:
+      - name: customers
+        description: "Staging table loaded by ADF (from ADLS)"
+      - name: invoices
+        description: "Staging table loaded by ADF (from ADLS)"
+      - name: payments
+        description: "Staging table loaded by ADF (from ADLS)"

@@ -1,12 +1,12 @@
 
 # Eurow Data Solution (Azure + dbt + ADF)
 
-Demo projekt ukazuje kompletní datovou pipeline postavenou na **Azure Data Platform** s využitím **Azure Data Factory (ADF)**, **Azure SQL Database**, **Azure Data Lake Storage (ADLS)** a **dbt Cloud** pro transformace.
+Demo projekt ukazuje kompletní datovou pipeline postavenou na **Azure Data Platform** s využitím **Azure Data Factory (ADF)**, **AzPostgresSQL**, **Azure Data Lake Storage (ADLS)** a **dbt Cloud** pro transformace.
 
 ## Technologie
 
 - **Azure Data Factory (ADF)** – orchestrátor pipeline
-- **Azure SQL Database** – hlavní datové úložiště
+- **AzPostgresSQL** – hlavní datové úložiště
 - **Azure Data Lake Storage (ADLS)** – staging soubory (CSV/XLSX)
 - **dbt Cloud** – transformace, snapshoty, testy, dokumentace
 - **Power BI** – reporting nad Gold vrstvou

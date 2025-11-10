@@ -1,32 +1,34 @@
 {{ config(
     materialized='incremental',
     schema='cln',
-    unique_key='CustomerId',
-    on_schema_change='sync'
+    unique_key='CustomerId'
 ) }}
+
+-- Inkrementální load z bronze do cln aka Silver pro PostgreSQL
 
 with base as (
     select
-        ltrim(rtrim(CustomerId)) as CustomerId,
-        ltrim(rtrim(CustomerName)) as CustomerName,
-        upper(ltrim(rtrim(CustomerCategory))) as CustomerCategory,
-        getdate() as LoadDate
+        trim(CustomerId) as CustomerId,
+        trim(CustomerName) as CustomerName,
+        upper(trim(CustomerCategory)) as CustomerCategory,
+        CURRENT_TIMESTAMP as LoadDate
     from {{ source('stg', 'customers') }}
     where CustomerId is not null
-)
+),
 
--- deduplikace, na zdroji neni cas, vezmeme vyssi partner ship
-, ranked as (
+-- dedup podle priority kategorie (GOLD > SILVER > BRONZE)
+ranked as (
     select *,
         case
             when CustomerCategory = 'GOLD' then 3
-            when CustomerCategory = 'SILVER' then 2
             when CustomerCategory = 'BRONZE' then 1
             else 0
         end as CategoryRank
     from base
-)
-, dedup as (
+),
+
+
+dedup as (
     select *
     from (
         select *,
@@ -42,9 +44,10 @@ with base as (
 select
     CustomerId,
     CustomerName,
-    CustomerCategory,
+    CustomerCategory
 from dedup
 
+-- Inkrementální načítání: pouze nové nebo aktualizované záznamy
 {% if is_incremental() %}
 where LoadDate > (select max(LoadDate) from {{ this }})
 {% endif %}

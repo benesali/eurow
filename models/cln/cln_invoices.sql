@@ -1,27 +1,22 @@
-{{
- config(materialized='incremental',
- schema='cln',
- unique_key='DocumentNumber',
- on_schema_change='sync'
-)
- }}
+{{ config(
+    materialized='incremental',
+    schema='cln',
+    unique_key='InvoiceNumber'
+) }}
 
--- incremental load from bronze do cln aka Silver
--- set PK for increment
+-- Inkrementální načítání z bronze do cln aka Silver pro PostgreSQL
 
 select
-  ltrim(rtrim(DocumentNumber)) as InvoiceNumber,
-  CustomerId,
-  try_convert(date, PostingDate, 104) as PostingDate,
-  try_convert(decimal(18,2), Amount) as Amount,
-  getdate() as LoadDate
+    trim(DocumentNumber) as InvoiceNumber,
+    trim(CustomerId) as CustomerId,
+    CAST(PostingDate AS DATE) as PostingDate,
+    CAST(Amount AS DECIMAL(18,2)) as Amount,
+    CURRENT_TIMESTAMP as LoadDate
 from {{ source('stg', 'invoices') }}
-where InvoiceNumber is not null
+where DocumentNumber is not null
 
--- incremental load by tech column
 {% if is_incremental() %}
-  where LoadDate > (select max(LoadDate) from {{ this }})
+  and CURRENT_TIMESTAMP > (select max(LoadDate) from {{ this }})
 {% endif %}
 
-{{ log("Model " ~ this.name ~ " finished.", info=True) }}
-
+{{ log("Model " ~ this.name ~ " finished successfully.", info=True) }}
