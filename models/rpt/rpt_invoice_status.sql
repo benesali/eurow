@@ -1,3 +1,5 @@
+{{ config(materialized='table', schema='rpt') }}
+
 -- co bylo vyfakturováno a co chybí uhradit, neuvidime nezaplacene faktury
 -- spocitej zustatky z plateb v payments dle Invoice Number
 with
@@ -18,7 +20,7 @@ select
     i.PostingDate,
     i.Amount as invoice_amount,
     coalesce(p.total_paid, 0) as total_paid, --kdyz nejsou platby
-    (i.Amount - coalesce(p.total_paid, 0)) as remaining_amount,
+    (i.Amount - coalesce(p.total_paid, 0)) as total_remaining,
     case
         when coalesce(p.total_paid, 0) = 0 then 'OPEN'
         when coalesce(p.total_paid, 0) < i.Amount then 'PARTIAL'

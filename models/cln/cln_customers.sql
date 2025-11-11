@@ -1,5 +1,6 @@
 {{ config(
     materialized='table',
+    schema='cln',
     unique_key='CustomerId'
 ) }}
 

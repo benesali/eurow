@@ -1,5 +1,5 @@
 {% macro ddl_create_schemas() %}
-  {% for schema_name in ['stg', 'cln', 'rpt', 'snapshots_cln'] %}
+  {% for schema_name in ['dbt_abenes_stg', 'snapshots_cln'] %}
     {% set sql %}
       CREATE SCHEMA IF NOT EXISTS {{ schema_name }}
     {% endset %}

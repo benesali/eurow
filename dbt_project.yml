@@ -31,19 +31,22 @@ clean-targets:
 # -----------------------------------------------
 # Model configuration
 
+# -----------------------------------------------
+# Model configuration
+
 models:
   eurow_demo:
     stg:                    # Bronze layer
       +materialized: table  # Full load
-      +schema: stg
+      +schema: dbt_abenes_stg
       +tags: ["bronze", "stage"]
     cln:                    # Silver layer
-      +materialized: incremental
-      +schema: cln
+      +materialized: table
+      +schema: dbt_abenes_cln
       +tags: ["silver", "clean"]
     rpt:                    # Gold layer
       +materialized: table
-      +schema: rpt
+      +schema: dbt_abenes_rpt
       +tags: ["rpt", "gold"]
 
 # -----------------------------------------------
@@ -52,4 +55,7 @@ models:
 snapshots:
   cln:
     +schema: snapshots_cln
+    +target_database: ewdemo
+  rpt:
+    +schema: snapshots_rpt
     +target_database: ewdemo
