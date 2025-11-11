@@ -4,7 +4,7 @@
 		"description": "Pipeline to trigger and monitor a DBT Cloud job via REST API.",
 		"activities": [
 			{
-				"name": "DBT prepare database job",
+				"name": "DBT prepare stage",
 				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
@@ -36,7 +36,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "DBT prepare database job",
+						"activity": "DBT prepare stage",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -50,7 +50,7 @@
 				"typeProperties": {
 					"variableName": "dbtRunId",
 					"value": {
-						"value": "@string(activity('DBT prepare database job').output.data.id)",
+						"value": "@string(activity('DBT prepare stage').output.data.id)",
 						"type": "Expression"
 					}
 				}
@@ -647,7 +647,7 @@
 				}
 			},
 			{
-				"name": "DBT cln transform data",
+				"name": "DBT transform data",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
