@@ -27,5 +27,4 @@ select
         when coalesce(p.total_paid, 0) >= i.Amount then 'PAID'
     end as invoice_status
 from {{ ref('cln_invoices') }} i
-left join payments_per_invoice p
-  on i.InvoiceNumber = p.InvoiceNumber
+left join payments_per_invoice p using (InvoiceNumber)

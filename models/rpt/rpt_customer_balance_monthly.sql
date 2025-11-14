@@ -13,10 +13,6 @@ select
     count(case when i.invoice_status = 'PAID' then 1 end) as paid_invoices,
     count(case when i.invoice_status = 'PARTIAL' then 1 end) as partial_invoices
 from {{ ref('rpt_invoice_status') }} i
-left join {{ ref('cln_customers') }} c
-    on i.CustomerId = c.CustomerId
+left join {{ ref('cln_customers') }} c using (CustomerId)
 group by
-    i.CustomerId,
-    c.CustomerName,
-    c.CustomerCategory,
-    date_trunc('month', i.PostingDate)
+   1,2,3,4
