@@ -1,7 +1,7 @@
 version: 2
 sources:
   - name: stg
-    schema: stg
+    schema: dbt_abenes_stg
     tables:
       - name: customers
         description: "Staging table loaded by ADF (from ADLS)"
