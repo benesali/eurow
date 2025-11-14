@@ -257,69 +257,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/stg_customers')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzPgsql",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "stg",
-					"table": "customers"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzPgsql')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/stg_invoices')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzPgsql",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "stg",
-					"table": "invoices"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzPgsql')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/stg_payments')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzPgsql",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "stg",
-					"table": "payments"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzPgsql')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/adls_payments_formatted')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -391,6 +328,69 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/adls_raw_adf')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/stg_customers')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzPgsql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "stg",
+					"table": "customers"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzPgsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/stg_invoices')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzPgsql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "stg",
+					"table": "invoices"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzPgsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/stg_payments')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzPgsql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "stg",
+					"table": "payments"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzPgsql')]"
 			]
 		},
 		{
@@ -480,7 +480,7 @@
 				"description": "Pipeline to trigger and monitor a DBT Cloud job via REST API.",
 				"activities": [
 					{
-						"name": "DBT prepare database job",
+						"name": "DBT prepare stage",
 						"type": "WebActivity",
 						"dependsOn": [],
 						"policy": {
@@ -512,7 +512,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "DBT prepare database job",
+								"activity": "DBT prepare stage",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -526,7 +526,7 @@
 						"typeProperties": {
 							"variableName": "dbtRunId",
 							"value": {
-								"value": "@string(activity('DBT prepare database job').output.data.id)",
+								"value": "@string(activity('DBT prepare stage').output.data.id)",
 								"type": "Expression"
 							}
 						}
@@ -651,6 +651,7 @@
 							"ifTrueActivities": [
 								{
 									"name": "Move Raw data to customers",
+									"description": "TRUNCATE TABLE stg.customers;\n",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -744,6 +745,7 @@
 								},
 								{
 									"name": "Move Raw data to invoices",
+									"description": "TRUNCATE TABLE stg.invoices;\n",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -939,6 +941,7 @@
 											"type": "AzurePostgreSqlSink",
 											"writeBatchSize": 1000000,
 											"writeBatchTimeout": "00:30:00",
+											"preCopyScript": "TRUNCATE TABLE stg.payments;\n",
 											"writeMethod": "CopyCommand"
 										},
 										"enableStaging": false,
@@ -1135,7 +1138,7 @@
 						}
 					},
 					{
-						"name": "DBT cln transform data",
+						"name": "DBT transform data",
 						"type": "WebActivity",
 						"dependsOn": [
 							{

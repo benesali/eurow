@@ -48,7 +48,7 @@
 				"description": "Pipeline to trigger and monitor a DBT Cloud job via REST API.",
 				"activities": [
 					{
-						"name": "DBT prepare database job",
+						"name": "DBT prepare stage",
 						"type": "WebActivity",
 						"dependsOn": [],
 						"policy": {
@@ -80,7 +80,7 @@
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "DBT prepare database job",
+								"activity": "DBT prepare stage",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -94,7 +94,7 @@
 						"typeProperties": {
 							"variableName": "dbtRunId",
 							"value": {
-								"value": "@string(activity('DBT prepare database job').output.data.id)",
+								"value": "@string(activity('DBT prepare stage').output.data.id)",
 								"type": "Expression"
 							}
 						}
@@ -219,6 +219,7 @@
 							"ifTrueActivities": [
 								{
 									"name": "Move Raw data to customers",
+									"description": "TRUNCATE TABLE stg.customers;\n",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -312,6 +313,7 @@
 								},
 								{
 									"name": "Move Raw data to invoices",
+									"description": "TRUNCATE TABLE stg.invoices;\n",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -507,6 +509,7 @@
 											"type": "AzurePostgreSqlSink",
 											"writeBatchSize": 1000000,
 											"writeBatchTimeout": "00:30:00",
+											"preCopyScript": "TRUNCATE TABLE stg.payments;\n",
 											"writeMethod": "CopyCommand"
 										},
 										"enableStaging": false,
@@ -703,7 +706,7 @@
 						}
 					},
 					{
-						"name": "DBT cln transform data",
+						"name": "DBT transform data",
 						"type": "WebActivity",
 						"dependsOn": [
 							{
@@ -888,6 +891,80 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "DS3_Payments.csv",
+						"folderPath": "raw",
+						"fileSystem": "datalake"
+					},
+					"columnDelimiter": ";",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CompanyId",
+						"type": "String"
+					},
+					{
+						"name": "CustomerId",
+						"type": "String"
+					},
+					{
+						"name": "CountryId",
+						"type": "String"
+					},
+					{
+						"name": "DocumentNumber",
+						"type": "String"
+					},
+					{
+						"name": "DocumentType",
+						"type": "String"
+					},
+					{
+						"name": "PostingDate",
+						"type": "String"
+					},
+					{
+						"name": "Entry",
+						"type": "String"
+					},
+					{
+						"name": "EntryType",
+						"type": "String"
+					},
+					{
+						"name": "Amount",
+						"type": "String"
+					},
+					{
+						"name": "InvoiceNumber",
+						"type": "String"
+					},
+					{
+						"name": "InvoiceEntry",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adls_raw_adf')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/adls_payments_formatted')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adls_raw_adf",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "DS3_Payments_Formatted.csv",
 						"folderPath": "raw",
 						"fileSystem": "datalake"
 					},
@@ -1140,80 +1217,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/adls_payments')]",
 				"[concat(variables('factoryId'), '/datasets/adls_payments_formatted')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/adls_payments_formatted')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "adls_raw_adf",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "DS3_Payments_Formatted.csv",
-						"folderPath": "raw",
-						"fileSystem": "datalake"
-					},
-					"columnDelimiter": ";",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "CompanyId",
-						"type": "String"
-					},
-					{
-						"name": "CustomerId",
-						"type": "String"
-					},
-					{
-						"name": "CountryId",
-						"type": "String"
-					},
-					{
-						"name": "DocumentNumber",
-						"type": "String"
-					},
-					{
-						"name": "DocumentType",
-						"type": "String"
-					},
-					{
-						"name": "PostingDate",
-						"type": "String"
-					},
-					{
-						"name": "Entry",
-						"type": "String"
-					},
-					{
-						"name": "EntryType",
-						"type": "String"
-					},
-					{
-						"name": "Amount",
-						"type": "String"
-					},
-					{
-						"name": "InvoiceNumber",
-						"type": "String"
-					},
-					{
-						"name": "InvoiceEntry",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/adls_raw_adf')]"
 			]
 		}
 	]
