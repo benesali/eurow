@@ -343,7 +343,7 @@
 				"type": "AzurePostgreSqlTable",
 				"schema": [],
 				"typeProperties": {
-					"schema": "stg",
+					"schema": "dbt_abenes_stg",
 					"table": "customers"
 				}
 			},
@@ -364,7 +364,7 @@
 				"type": "AzurePostgreSqlTable",
 				"schema": [],
 				"typeProperties": {
-					"schema": "stg",
+					"schema": "dbt_abenes_stg",
 					"table": "invoices"
 				}
 			},
@@ -385,7 +385,7 @@
 				"type": "AzurePostgreSqlTable",
 				"schema": [],
 				"typeProperties": {
-					"schema": "stg",
+					"schema": "dbt_abenes_stg",
 					"table": "payments"
 				}
 			},
