@@ -37,7 +37,7 @@ ADF tooling
 
 Iniciální příprava schémat a načtení dat do stage
 
-![Příprava schémat a načtení dat do stage](ADF_ppl.png)
+![Příprava schémat a načtení dat do stage](docs/imgs/ADF_ppl.png)
 
 ---
 
@@ -53,8 +53,10 @@ graph TD
 ```
 
 --
+## DBT lineage
+![Ukázka lieage v dbt pro reporting tabulku](docs/imgs/dbt_lineage.png)
 
-![Ukázka lieage v dbt pro reporting tabulku](dbt_lineage.png)
+
 
 ## BASIC model
 ```mermaid
@@ -96,5 +98,11 @@ erDiagram
     INVOICES ||--o{ PAYMENTS : "are paid by"
 ```
 
+## reports
+![Hlavní KPI](docs/imgs/main-kpis.png)
+
+![Zbývající doplatky zákazníků](docs/imgs/customer_remaining.png)
+
+![Filtrování zákazníků](docs/imgs/customer_paid.png)
 
 
