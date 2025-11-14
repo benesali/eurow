@@ -9,7 +9,7 @@
 		"type": "AzurePostgreSqlTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "stg",
+			"schema": "dbt_abenes_stg",
 			"table": "payments"
 		}
 	}
