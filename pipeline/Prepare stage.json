@@ -175,6 +175,7 @@
 					"ifTrueActivities": [
 						{
 							"name": "Move Raw data to customers",
+							"description": "TRUNCATE TABLE stg.customers;\n",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -266,6 +267,7 @@
 						},
 						{
 							"name": "Move Raw data to invoices",
+							"description": "TRUNCATE TABLE stg.invoices;\n",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -459,6 +461,7 @@
 									"type": "AzurePostgreSqlSink",
 									"writeBatchSize": 1000000,
 									"writeBatchTimeout": "00:30:00",
+									"preCopyScript": "TRUNCATE TABLE stg.payments;\n",
 									"writeMethod": "CopyCommand"
 								},
 								"enableStaging": false,
