@@ -35,9 +35,9 @@ ADF tooling
 | **Snapshots** | `snapshots_cln` | Historické záznamy (SCD2) pro audity a změnové sledování. |
 | **Report (Gold)** | `rpt` | Agregace a pohledy pro Power BI reporty. |
 
-Iiciálí příprava schémat a načtení dat do stage
+Iniciální příprava schémat a načtení dat do stage
 
-![Příprava schémat a načtení dat do stage](schemas_ppl.png)
+![Příprava schémat a načtení dat do stage](ADF_ppl.png)
 
 ---
 
@@ -52,10 +52,11 @@ graph TD
     E -->|"Refresh"| F["Power BI Dataset"]
 ```
 
-![alt text](prepare_db_stage.png)
+--
 
+![Ukázka lieage v dbt pro reporting tabulku](dbt_lineage.png)
 
-## BASIC model (gold tables tbd)
+## BASIC model
 ```mermaid
 erDiagram
     CUSTOMERS {
@@ -96,18 +97,4 @@ erDiagram
 ```
 
 
-## Gold tables
 
-
-### CUSTOMER balance
-
-    CustomerId INT,                           -- id zakaznika
-    CustomerName VARCHAR(255),
-    CustomerCategory VARCHAR(255),
-    invoice_month DATE,                        -- mesic fakturace (Datum, první den mesice)
-    total_invoices DECIMAL(18,2),              -- Celková fakturovaná částka
-    total_paid DECIMAL(18,2),                  -- zaplaceno celkem
-    total_remaining DECIMAL(18,2),             -- celkovy zustatek k zaplace
-    open_invoices INT,                         -- pocet otevrenych faktur
-    paid_invoices INT                          -- pocet zaplacenych faktur
-    partial_invoices INT                       -- pocet castecne uhrazenych faktur
