@@ -99,7 +99,7 @@ erDiagram
 ```
 
 ## reports
-![Hlavní KPI](docs/imgs/main-kpis.png)
+![Hlavní KPI](docs/imgs/main_kpis.png)
 
 ![Zbývající doplatky zákazníků](docs/imgs/customer_remaining.png)
 
